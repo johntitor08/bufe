@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kılıçbüfe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    :root {
+      --red: #c0392b;
+      --red-dark: #922b21;
+      --red-light: #e74c3c;
+      --cream: #fdf6ed;
+      --warm-white: #fff9f2;
+      --gold: #d4a843;
+      --brown: #5c3317;
+      --text: #1a1008;
+      --muted: #7a6552;
+      --border: #e8d5c0;
+      --card-shadow: 0 8px 32px rgba(90, 30, 10, 0.10);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: var(--red-dark);
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    header h1 span {
+      color: var(--gold);
+    }
+
+    nav {
+      display: flex;
+      gap: 6px;
+    }
+
+    nav a {
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+
+    nav a:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 380px;
+      background:
+        linear-gradient(135deg, rgba(144, 27, 15, 0.92) 0%, rgba(60, 10, 5, 0.80) 100%),
+        repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255, 255, 255, 0.02) 30px, rgba(255, 255, 255, 0.02) 60px);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212, 168, 67, 0.15) 0%, transparent 70%);
+      top: -100px;
+      right: -100px;
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--brown);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 5px 16px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+
+    .hero h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(36px, 6vw, 64px);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .hero p {
+      font-size: 17px;
+      color: rgba(255, 255, 255, 0.75);
+      max-width: 400px;
+    }
+
+    /* ===== LAYOUT ===== */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 0;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 60px;
+    }
+
+    .content-col {
+      min-width: 0;
+      padding-right: 32px;
+    }
+
+    /* ===== SECTIONS ===== */
+    section {
+      padding: 48px 0 24px;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      color: var(--red-dark);
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 28px;
+      background: var(--gold);
+      border-radius: 2px;
+    }
+
+    /* ===== ÜRÜN KARTLARI ===== */
+    #productList {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 40px rgba(90, 30, 10, 0.18);
+    }
+
+    /* Fotoğraflı kart görseli */
+    .card-img {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(135deg, #fce8d5, #f8d5b0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 52px;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      inset: 0;
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover .card-img img {
+      transform: scale(1.07);
+    }
+
+    .card-img .emoji-fallback {
+      font-size: 52px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-body {
+      padding: 14px 14px 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .category-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--cream);
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+    }
+
+    .card h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text);
+      line-height: 1.3;
+      flex: 1;
+    }
+
+    .card .price {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--red);
+      margin-bottom: 10px;
+    }
+
+    .add-btn {
+      width: 100%;
+      background: var(--red);
+      color: white;
+      border: none;
+      padding: 9px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      letter-spacing: 0.3px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .add-btn:hover {
+      background: var(--red-dark);
+    }
+
+    /* Loading skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, #f0e6da 25%, #e8d8c8 50%, #f0e6da 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 8px;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0
+      }
+
+      100% {
+        background-position: -200% 0
+      }
+    }
+
+    .skeleton-card {
+      border-radius: 16px;
+      overflow: hidden;
+      background: white;
+      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+    }
+
+    .skeleton-img {
+      height: 140px;
+    }
+
+    .skeleton-body {
+      padding: 14px;
+    }
+
+    .skeleton-line {
+      height: 12px;
+      margin-bottom: 8px;
+    }
+
+    .skeleton-line.short {
+      width: 60%;
+    }
+
+    .skeleton-btn {
+      height: 36px;
+      margin-top: 8px;
+      border-radius: 9px;
+    }
+
+    /* ===== MENÜ ===== */
+    .menu-category {
+      margin-bottom: 28px;
+    }
+
+    .menu-category h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      color: var(--red-dark);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .menu-category ul {
+      list-style: none;
+    }
+
+    .menu-category li {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .menu-category li:last-child {
+      border-bottom: none;
+    }
+
+    .menu-price {
+      font-weight: 700;
+      color: var(--red);
+      white-space: nowrap;
+    }
+
+    /* ===== SEPET ===== */
+    .cart-col {
+      padding-top: 48px;
+    }
+
+    .cart-sticky {
+      position: sticky;
+      top: 80px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(90, 30, 10, 0.12);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .cart-header {
+      background: var(--red-dark);
+      color: white;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cart-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .cart-count {
+      background: var(--gold);
+      color: var(--brown);
+      font-size: 11px;
+      font-weight: 700;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: auto;
+    }
+
+    .cart-body {
+      padding: 16px;
+    }
+
+    .cart-empty {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--muted);
+    }
+
+    .cart-empty .empty-icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .cart-empty p {
+      font-size: 14px;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cart-item:last-of-type {
+      border-bottom: none;
+    }
+
+    .cart-item-thumb {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #fce8d5, #f8d5b0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .cart-item-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cart-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cart-item-name {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cart-item-price {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .qty-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: white;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      padding: 0;
+    }
+
+    .qty-btn:hover {
+      border-color: var(--red);
+      color: var(--red);
+      background: #fff0f0;
+    }
+
+    .qty-num {
+      font-size: 13px;
+      font-weight: 700;
+      min-width: 16px;
+      text-align: center;
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 16px;
+      padding: 2px;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+
+    .remove-btn:hover {
+      color: var(--red);
+    }
+
+    .cart-footer {
+      padding: 16px;
+      border-top: 2px solid var(--border);
+    }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 14px;
+    }
+
+    .cart-total-label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .cart-total-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--red-dark);
+    }
+
+    .table-input-wrap {
+      margin-bottom: 12px;
+    }
+
+    .table-input-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    .table-input {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      background: var(--cream);
+      text-align: center;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .table-input:focus {
+      border-color: var(--red);
+      background: white;
+    }
+
+    .table-input::placeholder {
+      font-weight: 400;
+      color: #bba897;
+    }
+
+    .order-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 16px rgba(192, 57, 43, 0.35);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .order-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(192, 57, 43, 0.45);
+    }
+
+    /* ===== İLETİŞİM ===== */
+    #iletisim {
+      padding-bottom: 60px;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .contact-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+    }
+
+    .contact-icon {
+      font-size: 28px;
+      width: 52px;
+      height: 52px;
+      background: var(--cream);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .contact-info strong {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 3px;
+      font-weight: 500;
+    }
+
+    .contact-info span {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .map-wrap {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 18px;
+    }
+
+    .contact-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 22px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .map-btn {
+      background: #1976d2;
+      color: white;
+      box-shadow: 0 4px 16px rgba(25, 118, 210, 0.30);
+    }
+
+    .map-btn:hover {
+      background: #1565c0;
+      transform: translateY(-1px);
+    }
+
+    .whatsapp-btn {
+      background: #25D366;
+      color: white;
+      box-shadow: 0 4px 16px rgba(37, 211, 102, 0.30);
+    }
+
+    .whatsapp-btn:hover {
+      background: #1da851;
+      transform: translateY(-1px);
+    }
+
+    /* ===== HAKKIMIZDA ===== */
+    .about-box {
+      background: linear-gradient(135deg, var(--red-dark), var(--red));
+      color: white;
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .about-box p {
+      font-size: 16px;
+      opacity: 0.9;
+      line-height: 1.7;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--red-dark);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      z-index: 9999;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      background: #1a7a45;
+    }
+
+    /* ===== MOBİL ===== */
+    @media (max-width: 768px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+        padding: 0 16px 40px;
+      }
+
+      .content-col {
+        padding-right: 0;
+      }
+
+      .cart-col {
+        padding-top: 0;
+      }
+
+      .cart-sticky {
+        position: relative;
+        top: auto;
+      }
+
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        flex-direction: column;
+        height: auto;
+        padding: 12px 16px;
+        gap: 10px;
+      }
+
+      nav a {
+        font-size: 12px;
+        padding: 5px 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Kılıç<span>büfe</span></h1>
+    <nav>
+      <a href="#urunler">Ürünler</a>
+      <a href="#menu">Menü</a>
+      <a href="#hakkimizda">Hakkımızda</a>
+      <a href="#iletisim">İletişim</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-badge">🍞 Günlük Taze</div>
+    <h2>Lezzetin<br>Adresi</h2>
+    <p>Sıcak tostlar, taze malzemeler, hızlı servis.</p>
+  </section>
+
+  <div class="main-layout">
+    <div class="content-col">
+
+      <section id="urunler">
+        <h2 class="section-title">Ürünler</h2>
+        <div id="productList">
+          <!-- Skeleton loading -->
+          <div class="skeleton-card">
+            <div class="skeleton skeleton-img"></div>
+            <div class="skeleton-body">
+              <div class="skeleton skeleton-line short"></div>
+              <div class="skeleton skeleton-line"></div>
+              <div class="skeleton skeleton-btn"></div>
+            </div>
+          </div>
+          <div class="skeleton-card">
+            <div class="skeleton skeleton-img"></div>
+            <div class="skeleton-body">
+              <div class="skeleton skeleton-line short"></div>
+              <div class="skeleton skeleton-line"></div>
+              <div class="skeleton skeleton-btn"></div>
+            </div>
+          </div>
+          <div class="skeleton-card">
+            <div class="skeleton skeleton-img"></div>
+            <div class="skeleton-body">
+              <div class="skeleton skeleton-line short"></div>
+              <div class="skeleton skeleton-line"></div>
+              <div class="skeleton skeleton-btn"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="menu">
+        <h2 class="section-title">Menü</h2>
+        <div id="menuList"></div>
+      </section>
+
+      <section id="hakkimizda">
+        <h2 class="section-title">Hakkımızda</h2>
+        <div class="about-box">
+          <p>Kılıçbüfe olarak yıllardır aynı özenle, aynı tazelikte hizmet veriyoruz. Kaliteli malzeme, dürüst fiyat.
+          </p>
+        </div>
+      </section>
+
+      <section id="iletisim">
+        <h2 class="section-title">İletişim</h2>
+        <div class="contact-grid">
+          <div class="contact-card">
+            <div class="contact-icon">📞</div>
+            <div class="contact-info">
+              <strong>Telefon</strong>
+              <span>0534 369 77 41</span>
+            </div>
+          </div>
+          <div class="contact-card">
+            <div class="contact-icon">📍</div>
+            <div class="contact-info">
+              <strong>Konum</strong>
+              <span>Kılıçbüfe</span>
+            </div>
+          </div>
+        </div>
+        <div class="map-wrap">
+          <iframe src="https://www.google.com/maps?q=41.1708654,29.0543527&z=18&output=embed" width="100%" height="280"
+            style="border:0;display:block;" loading="lazy">
+          </iframe>
+        </div>
+        <div class="contact-actions">
+          <a href="https://www.google.com/maps?q=41.1708654,29.0543527" target="_blank" class="btn map-btn">📍 Haritada
+            Aç</a>
+          <a href="https://wa.me/905343697741?text=Merhaba%20Kılıçbüfe%20sipariş%20vermek%20istiyorum" target="_blank"
+            class="btn whatsapp-btn">📲 WhatsApp Sipariş</a>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- SEPET -->
+    <div class="cart-col">
+      <div class="cart-sticky">
+        <div class="cart-header">
+          <span>🛒</span>
+          <h2>Sepet</h2>
+          <div class="cart-count" id="cartCount">0</div>
+        </div>
+        <div class="cart-body" id="cartBody">
+          <div class="cart-empty">
+            <div class="empty-icon">🛒</div>
+            <p>Sepetiniz boş.<br>Ürün ekleyin!</p>
+          </div>
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display:none;">
+          <div class="cart-total">
+            <span class="cart-total-label">Toplam</span>
+            <span class="cart-total-amount" id="cartTotal">0₺</span>
+          </div>
+          <div class="table-input-wrap">
+            <label class="table-input-label" for="tableNumber">🪑 Masa Numarası</label>
+            <input class="table-input" type="number" id="tableNumber" min="1" placeholder="Masa No girin…">
+          </div>
+          <button class="order-btn" onclick="completeOrder()">📦 Siparişi Tamamla</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue, push, set, get, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "...",
+      authDomain: "PROJE_ID.firebaseapp.com",
+      databaseURL: "https://PROJE_ID-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "PROJE_ID",
+      storageBucket: "PROJE_ID.firebasestorage.app",
+      messagingSenderId: "...",
+      appId: "..."
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let products = [];
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const CATEGORY_EMOJI = {
+      "Tost": "🥪", "İçecek": "🥤", "Atıştırmalık": "🍟",
+      "Tatlı": "🍮", "Kahvaltı": "🍳"
+    };
+    function getCategoryEmoji(cat) { return CATEGORY_EMOJI[cat] || "🍽️"; }
+    function getProductEmoji(name) {
+      const n = name.toLowerCase();
+      if (n.includes("tost")) return "🥪";
+      if (n.includes("ayran")) return "🥛";
+      if (n.includes("çay")) return "🍵";
+      if (n.includes("kola") || n.includes("soda")) return "🥤";
+      if (n.includes("su")) return "💧";
+      if (n.includes("börek")) return "🥐";
+      if (n.includes("simit")) return "🥨";
+      if (n.includes("sütlaç") || n.includes("muhallebi")) return "🍮";
+      if (n.includes("brownie")) return "🍫";
+      if (n.includes("yumurta") || n.includes("menemen")) return "🍳";
+      if (n.includes("cips")) return "🍟";
+      return "🍽️";
+    }
+
+    function productImageHTML(p) {
+      if (p.imageUrl && p.imageUrl.trim()) {
+        return `<img src="${p.imageUrl}" alt="${p.name}" loading="lazy"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <span class="emoji-fallback" style="display:none;">${getProductEmoji(p.name)}</span>`;
+      }
+      return `<span class="emoji-fallback">${getProductEmoji(p.name)}</span>`;
+    }
+
+    // ÜRÜNLER
+    function listenProducts() {
+      onValue(ref(db, "products"), (snapshot) => {
+        products = [];
+        if (snapshot.exists()) {
+          snapshot.forEach(child => {
+            products.push({ fbKey: child.key, ...child.val() });
+          });
+        }
+        console.log("[Kılıçbüfe] Ürün sayısı:", products.length);
+        renderProducts();
+        renderMenu();
+      });
+    }
+
+    function renderProducts() {
+      const productList = document.getElementById("productList");
+      if (!productList) return;
+      productList.innerHTML = "";
+
+      if (products.length === 0) {
+        productList.innerHTML = `<p style="color:var(--muted);padding:20px 0;grid-column:1/-1;">Ürün bulunamadı.</p>`;
+        return;
+      }
+
+      products.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.onclick = () => addToCart(p.fbKey);
+        div.innerHTML = `
+      <div class="card-img">${productImageHTML(p)}</div>
+      <div class="card-body">
+        <span class="category-tag">${p.category}</span>
+        <h3>${p.name}</h3>
+        <div class="price">${p.price}₺</div>
+        <button class="add-btn" onclick="event.stopPropagation(); addToCart('${p.fbKey}')">+ Sepete Ekle</button>
+      </div>
+    `;
+        productList.appendChild(div);
+      });
+    }
+
+    function renderMenu() {
+      const menuList = document.getElementById("menuList");
+      if (!menuList) return;
+      const categories = {};
+      products.forEach(p => {
+        if (!categories[p.category]) categories[p.category] = [];
+        categories[p.category].push(p);
+      });
+      menuList.innerHTML = "";
+      for (let cat in categories) {
+        menuList.innerHTML += `
+      <div class="menu-category">
+        <h3>${getCategoryEmoji(cat)} ${cat}</h3>
+        <ul>
+          ${categories[cat].map(p => `
+            <li><span>${p.name}</span><span class="menu-price">${p.price}₺</span></li>
+          `).join("")}
+        </ul>
+      </div>`;
+      }
+    }
+
+    // SEPET
+    function addToCart(fbKey) {
+      const product = products.find(p => p.fbKey === fbKey);
+      if (!product) return;
+      let item = cart.find(c => c.fbKey === fbKey);
+      if (item) { item.qty++; } else { cart.push({ ...product, qty: 1 }); }
+      saveCart(); renderCart();
+      showToast(`${product.name} sepete eklendi`);
+    }
+
+    function renderCart() {
+      const cartBody = document.getElementById("cartBody");
+      const cartFooter = document.getElementById("cartFooter");
+      const cartCount = document.getElementById("cartCount");
+      const cartTotal = document.getElementById("cartTotal");
+
+      cartCount.textContent = cart.reduce((s, i) => s + i.qty, 0);
+
+      if (cart.length === 0) {
+        cartBody.innerHTML = `<div class="cart-empty"><div class="empty-icon">🛒</div><p>Sepetiniz boş.<br>Ürün ekleyin!</p></div>`;
+        cartFooter.style.display = "none";
+        return;
+      }
+
+      let total = 0;
+      cartBody.innerHTML = "";
+      cart.forEach(item => {
+        total += item.price * item.qty;
+        const thumbInner = (item.imageUrl && item.imageUrl.trim())
+          ? `<img src="${item.imageUrl}" alt="${item.name}" loading="lazy" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;">`
+          : getProductEmoji(item.name);
+        const div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+      <div class="cart-item-thumb">${thumbInner}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-price">${item.price}₺ × ${item.qty} = ${item.price * item.qty}₺</div>
+      </div>
+      <div class="qty-controls">
+        <button class="qty-btn" onclick="decQty('${item.fbKey}')">−</button>
+        <span class="qty-num">${item.qty}</span>
+        <button class="qty-btn" onclick="incQty('${item.fbKey}')">+</button>
+      </div>
+      <button class="remove-btn" onclick="removeItem('${item.fbKey}')">✕</button>`;
+        cartBody.appendChild(div);
+      });
+      cartTotal.textContent = `${total}₺`;
+      cartFooter.style.display = "block";
+    }
+
+    function incQty(fbKey) {
+      let item = cart.find(c => c.fbKey === fbKey);
+      if (item) item.qty++;
+      saveCart(); renderCart();
+    }
+    function decQty(fbKey) {
+      let item = cart.find(c => c.fbKey === fbKey);
+      if (!item) return;
+      item.qty--;
+      if (item.qty <= 0) cart = cart.filter(c => c.fbKey !== fbKey);
+      saveCart(); renderCart();
+    }
+    function removeItem(fbKey) {
+      cart = cart.filter(c => c.fbKey !== fbKey);
+      saveCart(); renderCart();
+    }
+
+    async function completeOrder() {
+      if (cart.length === 0) { showToast("Sepet boş!"); return; }
+      const tableInput = document.getElementById("tableNumber");
+      const tableNumber = tableInput ? tableInput.value.trim() : "";
+      if (!tableNumber) {
+        showToast("⚠️ Lütfen masa numarasını girin!");
+        tableInput && tableInput.focus();
+        return;
+      }
+      const order = {
+        items: cart.map(i => ({ name: i.name, price: i.price, qty: i.qty, category: i.category, imageUrl: i.imageUrl || "" })),
+        total: cart.reduce((s, i) => s + i.price * i.qty, 0),
+        tableNumber: Number(tableNumber),
+        time: new Date().toLocaleString("tr-TR"),
+        status: "bekliyor"
+      };
+      try {
+        await push(ref(db, "orders"), order);
+        cart = []; saveCart(); renderCart();
+        if (tableInput) tableInput.value = "";
+        showToast(`✅ Masa ${order.tableNumber} siparişi alındı! Teşekkürler.`, "success");
+      } catch (e) {
+        showToast("❌ Sipariş gönderilemedi.");
+        console.error(e);
+      }
+    }
+
+    function saveCart() { localStorage.setItem("cart", JSON.stringify(cart)); }
+
+    function showToast(msg, type = "") {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.className = "toast" + (type ? " " + type : "");
+      void toast.offsetWidth;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+
+    window.addToCart = addToCart;
+    window.incQty = incQty;
+    window.decQty = decQty;
+    window.removeItem = removeItem;
+    window.completeOrder = completeOrder;
+
+    listenProducts();
+    renderCart();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Giriş — Kılıçbüfe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --ink: #1a0a04;
+      --paper: #fdf8f3;
+      --ember: #b83a1a;
+      --ember-deep: #7a2010;
+      --gold: #c8963a;
+      --ash: #9e8e82;
+      --border: rgba(90, 40, 15, 0.12);
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--ink);
+    }
+
+    .visual {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 48px 52px;
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(200, 150, 58, 0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 80%, rgba(184, 58, 26, 0.22) 0%, transparent 50%),
+        #1a0a04;
+      overflow: hidden;
+    }
+
+    .visual-pattern {
+      position: absolute;
+      inset: 0;
+      opacity: 0.04;
+      background-image:
+        repeating-linear-gradient(0deg, #fff 0, #fff 1px, transparent 1px, transparent 48px),
+        repeating-linear-gradient(90deg, #fff 0, #fff 1px, transparent 1px, transparent 48px);
+    }
+
+    .visual-glow {
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200, 150, 58, 0.12) 0%, transparent 70%);
+      top: -80px;
+      right: -80px;
+      pointer-events: none;
+    }
+
+    .visual-logo {
+      position: relative;
+      margin-bottom: auto;
+      padding-top: 48px;
+    }
+
+    .logo-mark {
+      width: 52px;
+      height: 52px;
+      background: var(--ember);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 32px rgba(184, 58, 26, 0.45);
+    }
+
+    .visual-logo h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 38px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.5px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .visual-logo h1 span {
+      color: var(--gold);
+    }
+
+    .visual-tagline {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .visual-quote {
+      position: relative;
+    }
+
+    .visual-divider {
+      width: 40px;
+      height: 2px;
+      background: var(--gold);
+      border-radius: 1px;
+      margin-bottom: 20px;
+    }
+
+    .visual-quote blockquote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.75);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .visual-quote cite {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.3);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-style: normal;
+    }
+
+    .form-panel {
+      background: var(--paper);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 52px;
+      position: relative;
+    }
+
+    .form-panel::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 10%;
+      bottom: 10%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--border) 30%, var(--border) 70%, transparent);
+    }
+
+    .form-inner {
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .form-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--ember);
+      margin-bottom: 10px;
+    }
+
+    .form-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 6px;
+      line-height: 1.1;
+    }
+
+    .form-subtitle {
+      font-size: 14px;
+      color: var(--ash);
+      margin-bottom: 40px;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--ash);
+      margin-bottom: 8px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .field input {
+      width: 100%;
+      height: 48px;
+      padding: 0 16px 0 44px;
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: 'Outfit', sans-serif;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .field input:focus {
+      border-color: var(--ember);
+      box-shadow: 0 0 0 3px rgba(184, 58, 26, 0.10);
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    .error-bar {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: #fff0ed;
+      border: 1px solid rgba(184, 58, 26, 0.2);
+      border-left: 3px solid var(--ember);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      color: var(--ember-deep);
+    }
+
+    .error-bar.show {
+      display: flex;
+    }
+
+    .login-btn {
+      width: 100%;
+      height: 50px;
+      background: var(--ember);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .login-btn:hover {
+      background: #a33318;
+    }
+
+    .login-btn:active {
+      transform: scale(0.99);
+    }
+
+    .divider-line {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 28px 0;
+    }
+
+    .divider-line span {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider-line em {
+      font-size: 11px;
+      color: var(--ash);
+      font-style: normal;
+      letter-spacing: 0.5px;
+    }
+
+    .form-footer {
+      text-align: center;
+    }
+
+    .form-footer a {
+      font-size: 13px;
+      color: var(--ash);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .form-footer a:hover {
+      color: var(--ember);
+    }
+
+    @media (max-width: 720px) {
+      body {
+        grid-template-columns: 1fr;
+      }
+
+      .visual {
+        display: none;
+      }
+
+      .form-panel {
+        padding: 48px 28px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="visual">
+    <div class="visual-pattern"></div>
+    <div class="visual-glow"></div>
+
+    <div class="visual-logo">
+      <div class="logo-mark">🥪</div>
+      <h1>Kılıç<span>büfe</span></h1>
+      <p class="visual-tagline">Admin Sistemi</p>
+    </div>
+
+    <div class="visual-quote">
+      <div class="visual-divider"></div>
+      <blockquote>"Lezzetin arkasındaki düzen<br>buradan başlar."</blockquote>
+      <cite>Yönetim Paneli v2.0</cite>
+    </div>
+  </div>
+
+  <div class="form-panel">
+    <div class="form-inner">
+      <p class="form-eyebrow">Admin Girişi</p>
+      <h2 class="form-title">Tekrar<br>hoş geldiniz.</h2>
+      <p class="form-subtitle">Panele erişmek için giriş yapın.</p>
+
+      <div class="field">
+        <label>E-posta</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input id="user" type="email" placeholder="admin@kilicbufe.com" autocomplete="email">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Şifre</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input id="pass" type="password" placeholder="••••••" autocomplete="current-password"
+            onkeydown="if(event.key==='Enter') login()">
+        </div>
+      </div>
+
+      <div class="error-bar" id="errBar">
+        ❌ Kullanıcı adı veya şifre hatalı.
+      </div>
+
+      <button class="login-btn" onclick="login()">Giriş Yap →</button>
+
+      <div class="divider-line">
+        <span></span><em>ya da</em><span></span>
+      </div>
+
+      <div class="form-footer">
+        <a href="../index.html">← Müşteri sayfasına dön</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "...",
+      authDomain: "PROJE_ID.firebaseapp.com",
+      databaseURL: "https://PROJE_ID-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "PROJE_ID",
+      storageBucket: "PROJE_ID.firebasestorage.app",
+      messagingSenderId: "...",
+      appId: "..."
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Zaten giriş yapmışsa direkt dashboard'a yönlendir
+    onAuthStateChanged(auth, (user) => {
+      if (user) window.location.href = "dashboard.html";
+    });
+
+    async function login() {
+      const email = document.getElementById("user").value.trim();
+      const password = document.getElementById("pass").value;
+      const btn = document.querySelector(".login-btn");
+      const errBar = document.getElementById("errBar");
+
+      btn.textContent = "Giriş yapılıyor...";
+      btn.disabled = true;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = "dashboard.html";
+      } catch (e) {
+        errBar.textContent = "❌ E-posta veya şifre hatalı.";
+        errBar.classList.add("show");
+        ["user", "pass"].forEach(id => document.getElementById(id).style.borderColor = "#b83a1a");
+        btn.textContent = "Giriş Yap →";
+        btn.disabled = false;
+      }
+    }
+
+    document.querySelectorAll("input").forEach(inp => {
+      inp.addEventListener("input", () => {
+        document.getElementById("errBar").classList.remove("show");
+        inp.style.borderColor = "";
+      });
+    });
+
+    window.login = login;
+  </script>
+
+</body>
+
+</html>

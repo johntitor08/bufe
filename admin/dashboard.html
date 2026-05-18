@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Paneli — Kılıçbüfe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --ink: #1a0a04;
+      --ink-2: #2d140a;
+      --paper: #fdf8f3;
+      --surface: #fff;
+      --ember: #b83a1a;
+      --ember-deep: #7a2010;
+      --ember-pale: #fef3ef;
+      --gold: #c8963a;
+      --gold-pale: #fdf4e3;
+      --ash: #9e8e82;
+      --muted: #6e5e54;
+      --border: rgba(90, 40, 15, 0.10);
+      --border-strong: rgba(90, 40, 15, 0.18);
+      --sidebar-w: 240px;
+      --green: #1a7a45;
+      --green-pale: #edf7f2;
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family: 'Outfit', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    /* LAYOUT */
+    .layout {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr;
+      grid-template-rows: 100vh;
+      overflow: hidden;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      background: var(--ink);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .sidebar::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, rgba(200, 150, 58, 0.25) 30%, rgba(200, 150, 58, 0.25) 70%, transparent);
+    }
+
+    .sidebar-glow {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(184, 58, 26, 0.18) 0%, transparent 70%);
+      bottom: 60px;
+      left: -60px;
+      pointer-events: none;
+    }
+
+    .sidebar-brand {
+      padding: 28px 24px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      flex-shrink: 0;
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--ember);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .brand-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.5px;
+      line-height: 1;
+    }
+
+    .brand-name span {
+      color: var(--gold);
+    }
+
+    .brand-sub {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.3);
+      margin-left: 42px;
+    }
+
+    .sidebar-section {
+      padding: 20px 12px 8px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-section-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.25);
+      padding: 0 12px;
+      margin-bottom: 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.55);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+      position: relative;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .nav-item.active {
+      background: rgba(184, 58, 26, 0.20);
+      color: #fff;
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20%;
+      bottom: 20%;
+      width: 2.5px;
+      background: var(--ember);
+      border-radius: 2px;
+    }
+
+    .nav-icon {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--ember);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .sidebar-footer a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.35);
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .sidebar-footer a:hover {
+      color: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* MAIN */
+    .main {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* TOPBAR */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .topbar-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .admin-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--paper);
+      border: 1px solid var(--border-strong);
+      border-radius: 20px;
+      padding: 5px 14px 5px 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .admin-avatar {
+      width: 26px;
+      height: 26px;
+      background: var(--ember);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    /* SCROLL */
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 32px 40px;
+    }
+
+    /* STATS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+      box-shadow: 0 4px 20px rgba(90, 30, 10, 0.08);
+    }
+
+    .stat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      color: var(--ash);
+      text-transform: uppercase;
+    }
+
+    .stat-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .stat-icon.ember {
+      background: var(--ember-pale);
+    }
+
+    .stat-icon.gold {
+      background: var(--gold-pale);
+    }
+
+    .stat-icon.green {
+      background: var(--green-pale);
+    }
+
+    .stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .stat-sub {
+      font-size: 12px;
+      color: var(--ash);
+    }
+
+    /* TABS */
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border-strong);
+      margin-bottom: 24px;
+    }
+
+    .tab-btn {
+      padding: 10px 22px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--ash);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.15s;
+      font-family: 'Outfit', sans-serif;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+
+    .tab-btn:hover {
+      color: var(--ink);
+    }
+
+    .tab-btn.active {
+      color: var(--ember);
+      border-bottom-color: var(--ember);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* PANEL CARD */
+    .panel-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-head h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .panel-head .count-badge {
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--paper);
+      border: 1px solid var(--border-strong);
+      color: var(--muted);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    /* SİPARİŞ LİSTESİ */
+    .order-row {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .order-row:last-child {
+      border-bottom: none;
+    }
+
+    .order-row:hover {
+      background: var(--paper);
+    }
+
+    .order-head-row {
+      display: flex;
+      align-items: center;
+      padding: 14px 22px;
+      gap: 16px;
+      cursor: pointer;
+    }
+
+    .order-num {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ember);
+      background: var(--ember-pale);
+      border-radius: 6px;
+      padding: 3px 9px;
+      white-space: nowrap;
+    }
+
+    .order-time-col {
+      color: var(--ash);
+      font-size: 13px;
+      flex: 1;
+    }
+
+    .order-item-preview {
+      font-size: 13px;
+      color: var(--muted);
+      flex: 2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .order-total-col {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .order-expand-btn {
+      font-size: 12px;
+      color: var(--ash);
+      cursor: pointer;
+      transition: transform 0.2s;
+      user-select: none;
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .order-detail {
+      display: none;
+      padding: 0 22px 16px 22px;
+    }
+
+    .order-detail.open {
+      display: block;
+    }
+
+    .order-detail-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .order-detail-table td {
+      padding: 6px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .order-detail-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .order-detail-table .item-name {
+      color: var(--ink);
+    }
+
+    .order-detail-table .item-qty {
+      color: var(--ash);
+      text-align: center;
+    }
+
+    .order-detail-table .item-sub {
+      font-weight: 600;
+      text-align: right;
+      color: var(--muted);
+    }
+
+    /* ÜRÜN FORMU */
+    .product-form-wrap {
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--border);
+      background: var(--paper);
+    }
+
+    .pf-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .pf-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .pf-field {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .pf-field.wide {
+      flex: 2;
+    }
+
+    .pf-field label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ash);
+      margin-bottom: 6px;
+    }
+
+    .pf-field input {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Outfit', sans-serif;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .pf-field input:focus {
+      border-color: var(--ember);
+    }
+
+    .pf-field input.error {
+      border-color: var(--ember) !important;
+    }
+
+    .field-error {
+      font-size: 11px;
+      color: var(--ember);
+      margin-top: 4px;
+      display: none;
+    }
+
+    .field-error.show {
+      display: block;
+    }
+
+    .pf-add-btn {
+      height: 40px;
+      padding: 0 20px;
+      background: var(--ember);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+      flex-shrink: 0;
+      align-self: flex-end;
+      margin-bottom: 0;
+    }
+
+    .pf-add-btn:hover {
+      background: var(--ember-deep);
+    }
+
+    /* URL önizleme */
+    .img-preview-wrap {
+      margin-top: 6px;
+      display: none;
+    }
+
+    .img-preview-wrap.show {
+      display: block;
+    }
+
+    .img-preview-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid var(--border-strong);
+      display: block;
+    }
+
+    .img-preview-err {
+      font-size: 11px;
+      color: var(--ember);
+    }
+
+    .pf-success {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: #edf7f2;
+      border-left: 3px solid #1a7a45;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #1a7a45;
+      font-weight: 500;
+      margin: 0 22px 16px;
+    }
+
+    .pf-success.show {
+      display: flex;
+    }
+
+    /* ÜRÜN TABLOSU */
+    .product-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    .product-table thead tr {
+      background: var(--paper);
+    }
+
+    .product-table th {
+      text-align: left;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ash);
+      padding: 10px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .product-table td {
+      padding: 10px 22px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .product-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .product-table tbody tr:hover td {
+      background: var(--paper);
+    }
+
+    .prod-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid var(--border-strong);
+      display: block;
+    }
+
+    .prod-thumb-emoji {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: var(--gold-pale);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      border: 1px solid var(--border-strong);
+    }
+
+    .cat-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: var(--gold-pale);
+      color: #7a5010;
+      border: 1px solid rgba(200, 150, 58, 0.20);
+    }
+
+    .price-cell {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ember);
+    }
+
+    .action-cell {
+      display: flex;
+      gap: 6px;
+    }
+
+    .del-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      background: transparent;
+      color: var(--ash);
+      border: 1px solid var(--border-strong);
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .del-btn:hover {
+      background: var(--ember);
+      color: #fff;
+      border-color: var(--ember);
+    }
+
+    /* EMPTY */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 56px 24px;
+      color: var(--ash);
+      text-align: center;
+      gap: 12px;
+    }
+
+    .empty-icon {
+      font-size: 36px;
+      opacity: 0.5;
+    }
+
+    .empty-text {
+      font-size: 14px;
+    }
+
+    /* DELIVER */
+    .deliver-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: var(--green-pale);
+      color: var(--green);
+      border: 1px solid rgba(26, 122, 69, 0.25);
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .deliver-btn:hover {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+    }
+
+    /* QR */
+    .qr-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .qr-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .qr-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 36px 24px 28px;
+      gap: 20px;
+    }
+
+    .qr-canvas-wrap {
+      background: white;
+      border: 1px solid var(--border-strong);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #qrCanvas {
+      display: block;
+    }
+
+    .qr-url-label {
+      font-size: 12px;
+      color: var(--ash);
+      text-align: center;
+      word-break: break-all;
+      max-width: 280px;
+      line-height: 1.5;
+    }
+
+    .qr-download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-size: 13.5px;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .qr-download-btn:hover {
+      background: var(--ember-deep);
+    }
+
+    .qr-settings {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .qr-settings h4 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .qr-field {
+      margin-bottom: 16px;
+    }
+
+    .qr-field label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ash);
+      margin-bottom: 7px;
+    }
+
+    .qr-field input,
+    .qr-field select {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      background: var(--paper);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-family: 'Outfit', sans-serif;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .qr-field input:focus,
+    .qr-field select:focus {
+      border-color: var(--ember);
+    }
+
+    .qr-field .color-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .qr-field input[type="color"] {
+      width: 44px;
+      height: 40px;
+      padding: 4px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .qr-regen-btn {
+      width: 100%;
+      height: 42px;
+      background: var(--ember);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.15s;
+    }
+
+    .qr-regen-btn:hover {
+      background: var(--ember-deep);
+    }
+
+    .qr-info-box {
+      background: var(--gold-pale);
+      border: 1px solid rgba(200, 150, 58, 0.25);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 12.5px;
+      color: #7a5010;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .qr-info-box strong {
+      font-weight: 600;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .scroll-area {
+        padding: 20px 16px 40px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .qr-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-glow"></div>
+      <div class="sidebar-brand">
+        <div class="brand-mark">
+          <div class="brand-icon">🥪</div>
+          <span class="brand-name">Kılıç<span>büfe</span></span>
+        </div>
+        <p class="brand-sub">Admin Paneli</p>
+      </div>
+      <div class="sidebar-section">
+        <p class="sidebar-section-label">Yönetim</p>
+        <div class="nav-item active" onclick="window.switchTab('orders', this)">
+          <span class="nav-icon">📋</span> Siparişler
+          <span class="nav-badge" id="orderBadge">0</span>
+        </div>
+        <div class="nav-item" onclick="window.switchTab('products', this)">
+          <span class="nav-icon">🧾</span> Ürünler
+        </div>
+        <div class="nav-item" onclick="window.switchTab('qr', this)">
+          <span class="nav-icon">📱</span> QR Kod
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <a href="../index.html"><span style="font-size:16px;">←</span> Siteye Dön</a>
+        <a href="#" onclick="window.logout(); return false;" style="margin-top:4px; color:rgba(255,100,80,0.7);">
+          <span style="font-size:16px;">⏻</span> Çıkış Yap
+        </a>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <span class="topbar-title" id="topbarTitle">Siparişler</span>
+        <div class="topbar-right">
+          <div class="admin-pill">
+            <div class="admin-avatar">A</div>
+            admin
+          </div>
+        </div>
+      </div>
+
+      <!-- SCROLL AREA -->
+      <div class="scroll-area">
+
+        <!-- STATS -->
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <!-- TABS -->
+        <div class="tab-bar">
+          <button class="tab-btn active" id="tab-orders" onclick="window.switchTab('orders', this)">📋
+            Siparişler</button>
+          <button class="tab-btn" id="tab-products" onclick="window.switchTab('products', this)">🧾 Ürünler</button>
+          <button class="tab-btn" id="tab-qr" onclick="window.switchTab('qr', this)">📱 QR Kod</button>
+        </div>
+
+        <!-- SİPARİŞLER -->
+        <div class="tab-panel active" id="panel-orders">
+          <div class="panel-card" id="ordersCard"></div>
+        </div>
+
+        <!-- ÜRÜNLER -->
+        <div class="tab-panel" id="panel-products">
+          <div class="panel-card">
+            <div class="panel-head">
+              <h3>Ürün Yönetimi</h3>
+              <span class="count-badge" id="productCount">0 ürün</span>
+            </div>
+
+            <!-- FORM -->
+            <div class="product-form-wrap">
+              <!-- Satır 1: ad, fiyat, kategori, ekle -->
+              <div class="pf-row">
+                <div class="pf-field">
+                  <label>Ürün Adı</label>
+                  <input id="pname" placeholder="Karışık Tost" onkeydown="if(event.key==='Enter') window.addProduct()">
+                  <span class="field-error" id="err-pname">Bu alan zorunlu.</span>
+                </div>
+                <div class="pf-field" style="flex:0.45;">
+                  <label>Fiyat (₺)</label>
+                  <input id="pprice" type="number" min="1" placeholder="80"
+                    onkeydown="if(event.key==='Enter') window.addProduct()">
+                  <span class="field-error" id="err-pprice">Geçerli fiyat girin.</span>
+                </div>
+                <div class="pf-field" style="flex:0.7;">
+                  <label>Kategori</label>
+                  <input id="pcategory" placeholder="Tost" onkeydown="if(event.key==='Enter') window.addProduct()">
+                  <span class="field-error" id="err-pcategory">Bu alan zorunlu.</span>
+                </div>
+              </div>
+              <!-- Satır 2: fotoğraf URL + ekle butonu -->
+              <div class="pf-row">
+                <div class="pf-field wide">
+                  <label>Fotoğraf URL <span
+                      style="font-weight:400;text-transform:none;letter-spacing:0;">(opsiyonel)</span></label>
+                  <input id="pimageUrl" placeholder="https://example.com/tost.jpg" oninput="window.previewImg(this)">
+                  <div class="img-preview-wrap" id="imgPreviewWrap">
+                    <img class="img-preview-thumb" id="imgPreviewThumb" src="" alt="Önizleme"
+                      onerror="document.getElementById('imgPreviewThumb').style.display='none'; document.getElementById('imgPreviewErr').style.display='block';"
+                      onload="document.getElementById('imgPreviewThumb').style.display='block'; document.getElementById('imgPreviewErr').style.display='none';">
+                    <span class="img-preview-err" id="imgPreviewErr" style="display:none;">⚠ Görsel yüklenemedi.</span>
+                  </div>
+                </div>
+                <button class="pf-add-btn" onclick="window.addProduct()"
+                  style="margin-bottom:0;align-self:flex-start;margin-top:22px;">+ Ekle</button>
+              </div>
+            </div>
+
+            <div class="pf-success" id="addSuccess">✅ Ürün başarıyla eklendi!</div>
+
+            <table class="product-table">
+              <thead>
+                <tr>
+                  <th style="width:56px;">Foto</th>
+                  <th>Ürün Adı</th>
+                  <th>Kategori</th>
+                  <th>Fiyat</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="productList"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- QR KOD -->
+        <div class="tab-panel" id="panel-qr">
+          <div class="qr-layout">
+            <div class="qr-card">
+              <div class="panel-head">
+                <h3>Müşteri QR Kodu</h3>
+              </div>
+              <div class="qr-display">
+                <div class="qr-canvas-wrap">
+                  <canvas id="qrCanvas" width="220" height="220"></canvas>
+                </div>
+                <p class="qr-url-label" id="qrUrlLabel">—</p>
+                <button class="qr-download-btn" onclick="window.downloadQR()">⬇ PNG İndir</button>
+              </div>
+            </div>
+            <div class="qr-settings">
+              <h4>Ayarlar</h4>
+              <div class="qr-info-box">
+                <strong>Domain'inizi girin.</strong><br>
+                Deploy ettikten sonra gerçek URL ile güncelleyin.
+              </div>
+              <div class="qr-field">
+                <label>Site URL</label>
+                <input id="qrUrl" value="https://kilicbufe.com" oninput="window.generateQR()">
+              </div>
+              <div class="qr-field">
+                <label>QR Rengi</label>
+                <div class="color-row">
+                  <input type="color" id="qrColor" value="#1a0a04" oninput="window.generateQR()">
+                  <input id="qrColorHex" value="#1a0a04" oninput="window.syncColor(this)" placeholder="#1a0a04"
+                    style="flex:1;">
+                </div>
+              </div>
+              <div class="qr-field">
+                <label>Boyut</label>
+                <select id="qrSize" onchange="window.generateQR()">
+                  <option value="180">Küçük (180px)</option>
+                  <option value="220" selected>Orta (220px)</option>
+                  <option value="300">Büyük (300px)</option>
+                </select>
+              </div>
+              <button class="qr-regen-btn" onclick="window.generateQR()">🔄 Yenile</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /scroll-area -->
+    </div><!-- /main -->
+  </div><!-- /layout -->
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue, push, remove, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "...",
+      authDomain: "PROJE_ID.firebaseapp.com",
+      databaseURL: "https://PROJE_ID-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "PROJE_ID",
+      storageBucket: "PROJE_ID.firebasestorage.app",
+      messagingSenderId: "...",
+      appId: "..."
+    };
+
+    const fbApp = initializeApp(firebaseConfig);
+    const db = getDatabase(fbApp);
+    const auth = getAuth(fbApp);
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) { window.location.href = "login.html"; return; }
+      const pill = document.querySelector(".admin-pill");
+      if (pill) pill.innerHTML = `<div class="admin-avatar">A</div> ${user.email}`;
+      startListeners();
+    });
+
+    async function logout() { await signOut(auth); window.location.href = "login.html"; }
+
+    let products = [];
+    let orders = [];
+    let listenersStarted = false;
+
+    function startListeners() {
+      if (listenersStarted) return;
+      listenersStarted = true;
+      onValue(ref(db, "products"), (snap) => {
+        products = [];
+        if (snap.exists()) {
+          const val = snap.val();
+          products = Object.entries(val).map(([k, v]) => ({ fbKey: k, ...v }));
+        }
+        console.log("[Dashboard] Ürünler yüklendi:", products.length, products);
+        renderProducts();
+        renderStats();
+      }, (err) => {
+        console.error("[Dashboard] Ürünler okunamadı:", err.code, err.message);
+      });
+      onValue(ref(db, "orders"), (snap) => {
+        orders = [];
+        if (snap.exists()) {
+          const val = snap.val();
+          orders = Object.entries(val).map(([k, v]) => ({ fbKey: k, ...v }));
+        }
+        console.log("[Dashboard] Siparişler yüklendi:", orders.length, orders);
+        renderOrders();
+        renderStats();
+      }, (err) => {
+        console.error("[Dashboard] Siparişler okunamadı:", err.code, err.message);
+      });
+    }
+
+    // STATS
+    function renderStats() {
+      const getOrderTotal = (o) => {
+        if (o.total) return o.total;
+        if (Array.isArray(o.items)) return o.items.reduce((ss, i) => ss + (i.price || 0) * (i.qty || 1), 0);
+        return 0;
+      };
+      const totalRevenue = orders.reduce((s, o) => s + getOrderTotal(o), 0);
+      const avgOrder = orders.length ? Math.round(totalRevenue / orders.length) : 0;
+      document.getElementById("statsGrid").innerHTML = `
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-label">Toplam Sipariş</span><div class="stat-icon ember">📋</div></div>
+      <div class="stat-value">${orders.length}</div><div class="stat-sub">Tüm zamanlar</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-label">Toplam Hasılat</span><div class="stat-icon green">💰</div></div>
+      <div class="stat-value">${totalRevenue}₺</div><div class="stat-sub">Tüm siparişler</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-label">Ortalama Sipariş</span><div class="stat-icon gold">📊</div></div>
+      <div class="stat-value">${avgOrder}₺</div><div class="stat-sub">${products.length} ürün menüde</div>
+    </div>`;
+      document.getElementById("orderBadge").textContent = orders.length;
+    }
+
+    // SİPARİŞLER
+    function renderOrders() {
+      const card = document.getElementById("ordersCard");
+      card.innerHTML = `
+    <div class="panel-head">
+      <h3>Tüm Siparişler</h3>
+      <span class="count-badge">${orders.length} sipariş</span>
+    </div>`;
+      if (orders.length === 0) {
+        card.innerHTML += `<div class="empty-state"><div class="empty-icon">📋</div><p class="empty-text">Henüz sipariş bulunmuyor.</p></div>`;
+        return;
+      }
+      [...orders].reverse().forEach(o => {
+        const items = Array.isArray(o.items) ? o.items : [];
+        const total = o.total || items.reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0);
+        const preview = items.length ? items.map(i => `${i.name} ×${i.qty}`).join(", ") : "—";
+        const rows = items.map(i => `
+      <tr>
+        <td class="item-name">${i.name}</td>
+        <td class="item-qty">×${i.qty}</td>
+        <td class="item-sub">${(i.price || 0) * (i.qty || 1)}₺</td>
+      </tr>`).join("");
+        const div = document.createElement("div");
+        div.className = "order-row";
+        div.innerHTML = `
+      <div class="order-head-row" onclick="window.toggleOrder(this)">
+        <span class="order-num">#${o.fbKey.slice(-5)}</span>
+        <span class="order-time-col">${o.time}</span>
+        <span class="order-item-preview">${preview}</span>
+        <span class="order-total-col">${total}₺</span>
+        <span class="order-expand-btn">▼</span>
+      </div>
+      <div class="order-detail">
+        <table class="order-detail-table">${rows}</table>
+        <div style="padding:10px 0 4px;display:flex;justify-content:flex-end;">
+          <button class="deliver-btn" onclick="window._deliverOrder('${o.fbKey}')">✅ Teslim Edildi</button>
+        </div>
+      </div>`;
+        card.appendChild(div);
+      });
+    }
+
+    function toggleOrder(headRow) {
+      const detail = headRow.nextElementSibling;
+      const btn = headRow.querySelector(".order-expand-btn");
+      const open = detail.classList.toggle("open");
+      btn.style.transform = open ? "rotate(180deg)" : "";
+    }
+
+    async function deliverOrder(fbKey) { await remove(ref(db, "orders/" + fbKey)); }
+
+    // ÜRÜNLER
+    function getProductEmoji(name) {
+      const n = name.toLowerCase();
+      if (n.includes("tost")) return "🥪";
+      if (n.includes("ayran")) return "🥛";
+      if (n.includes("çay")) return "🍵";
+      if (n.includes("kola") || n.includes("soda")) return "🥤";
+      if (n.includes("su")) return "💧";
+      if (n.includes("börek")) return "🥐";
+      if (n.includes("simit")) return "🥨";
+      if (n.includes("brownie")) return "🍫";
+      if (n.includes("sütlaç") || n.includes("muhallebi")) return "🍮";
+      if (n.includes("yumurta") || n.includes("menemen")) return "🍳";
+      if (n.includes("cips")) return "🍟";
+      return "🍽️";
+    }
+
+    function thumbHTML(p) {
+      if (p.imageUrl && p.imageUrl.trim()) {
+        return `<img class="prod-thumb" src="${p.imageUrl}" alt="${p.name}"
+      onerror="this.outerHTML='<div class=\\'prod-thumb-emoji\\'>${getProductEmoji(p.name)}</div>'">`;
+      }
+      return `<div class="prod-thumb-emoji">${getProductEmoji(p.name)}</div>`;
+    }
+
+    function renderProducts() {
+      const list = document.getElementById("productList");
+      const countEl = document.getElementById("productCount");
+      if (countEl) countEl.textContent = products.length + " ürün";
+      if (products.length === 0) {
+        list.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--ash);font-size:14px;">Henüz ürün yok. Yukarıdan ekleyin.</td></tr>`;
+        return;
+      }
+      list.innerHTML = products.map(p => `
+    <tr>
+      <td>${thumbHTML(p)}</td>
+      <td style="font-weight:500;">${p.name}</td>
+      <td><span class="cat-tag">${p.category}</span></td>
+      <td class="price-cell">${p.price}₺</td>
+      <td>
+        <div class="action-cell">
+          <button class="del-btn" onclick="window._editImg('${p.fbKey}')">🖼 Foto</button>
+          <button class="del-btn" onclick="window._editPrice('${p.fbKey}')">✏ Fiyat</button>
+          <button class="del-btn" onclick="window._deleteProduct('${p.fbKey}')">✕ Sil</button>
+        </div>
+      </td>
+    </tr>`).join("");
+    }
+
+    // FORM VALIDATION
+    function fieldErr(id, msg) {
+      const inp = document.getElementById(id);
+      const err = document.getElementById("err-" + id);
+      inp.classList.add("error");
+      if (err) { err.textContent = msg; err.classList.add("show"); }
+    }
+    function clearFieldErr(id) {
+      const inp = document.getElementById(id);
+      const err = document.getElementById("err-" + id);
+      inp.classList.remove("error");
+      if (err) err.classList.remove("show");
+    }
+
+    async function addProduct() {
+      const name = document.getElementById("pname").value.trim();
+      const priceRaw = document.getElementById("pprice").value;
+      const price = parseFloat(priceRaw);
+      const category = document.getElementById("pcategory").value.trim();
+      const imageUrl = document.getElementById("pimageUrl").value.trim();
+
+      let valid = true;
+      ["pname", "pprice", "pcategory"].forEach(id => clearFieldErr(id));
+
+      if (!name) { fieldErr("pname", "Ürün adı zorunlu."); valid = false; }
+      if (!priceRaw || isNaN(price) || price <= 0) { fieldErr("pprice", "Geçerli fiyat."); valid = false; }
+      if (!category) { fieldErr("pcategory", "Kategori zorunlu."); valid = false; }
+      if (!valid) return;
+
+      try {
+        await push(ref(db, "products"), { name, price, category, imageUrl });
+        ["pname", "pprice", "pcategory", "pimageUrl"].forEach(id => {
+          document.getElementById(id).value = "";
+          if (["pname", "pprice", "pcategory"].includes(id)) clearFieldErr(id);
+        });
+        document.getElementById("imgPreviewWrap").classList.remove("show");
+        const success = document.getElementById("addSuccess");
+        success.classList.add("show");
+        setTimeout(() => success.classList.remove("show"), 2500);
+        document.getElementById("pname").focus();
+      } catch (e) { console.error(e); }
+    }
+
+    async function editPrice(fbKey) {
+      const p = products.find(x => x.fbKey === fbKey);
+      if (!p) return;
+      const newPrice = parseFloat(prompt("Yeni fiyat (₺):", p.price));
+      if (isNaN(newPrice) || newPrice <= 0) return;
+      await set(ref(db, "products/" + fbKey + "/price"), newPrice);
+    }
+
+    async function editImg(fbKey) {
+      const p = products.find(x => x.fbKey === fbKey);
+      if (!p) return;
+      const newUrl = prompt("Yeni fotoğraf URL:", p.imageUrl || "");
+      if (newUrl === null) return; // iptal
+      await set(ref(db, "products/" + fbKey + "/imageUrl"), newUrl.trim());
+    }
+
+    async function deleteProduct(fbKey) {
+      if (!confirm("Bu ürünü silmek istiyor musun?")) return;
+      await remove(ref(db, "products/" + fbKey));
+    }
+
+    // IMG PREVIEW
+    function previewImg(input) {
+      const url = input.value.trim();
+      const wrap = document.getElementById("imgPreviewWrap");
+      const img = document.getElementById("imgPreviewThumb");
+      const err = document.getElementById("imgPreviewErr");
+      if (!url) { wrap.classList.remove("show"); return; }
+      wrap.classList.add("show");
+      img.style.display = "block";
+      err.style.display = "none";
+      img.src = url;
+    }
+
+    // TABS
+    function switchTab(name, triggerEl) {
+      document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+      document.getElementById("panel-" + name).classList.add("active");
+      const tabBtn = document.getElementById("tab-" + name);
+      if (tabBtn) tabBtn.classList.add("active");
+      if (triggerEl) {
+        if (triggerEl.classList.contains("nav-item")) triggerEl.classList.add("active");
+        if (triggerEl.classList.contains("tab-btn")) {
+          document.querySelectorAll(".nav-item").forEach(n => {
+            if (n.getAttribute("onclick") && n.getAttribute("onclick").includes("'" + name + "'"))
+              n.classList.add("active");
+          });
+        }
+      }
+      const titles = { orders: "Siparişler", products: "Ürün Yönetimi", qr: "QR Kod" };
+      document.getElementById("topbarTitle").textContent = titles[name] || name;
+      if (name === "qr") generateQR();
+    }
+
+    // QR
+    function generateQR() {
+      const url = document.getElementById("qrUrl").value.trim() || "https://kilicbufe.com";
+      const color = document.getElementById("qrColor").value;
+      const size = parseInt(document.getElementById("qrSize").value);
+      document.getElementById("qrUrlLabel").textContent = url;
+      const canvas = document.getElementById("qrCanvas");
+      canvas.width = size; canvas.height = size;
+      if (window.makeQR) {
+        try {
+          const { matrix, size: n } = window.makeQR(url);
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, size, size);
+          const mod = size / n;
+          ctx.fillStyle = color;
+          for (let r = 0; r < n; r++)
+            for (let c = 0; c < n; c++)
+              if (matrix[r][c] === 1) ctx.fillRect(c * mod, r * mod, mod, mod);
+        } catch (e) { console.error(e); }
+      }
+    }
+
+    function syncColor(hexInput) {
+      const val = hexInput.value;
+      if (/^#[0-9A-Fa-f]{6}$/.test(val)) { document.getElementById("qrColor").value = val; generateQR(); }
+    }
+
+    document.getElementById("qrColor").addEventListener("input", function () {
+      document.getElementById("qrColorHex").value = this.value;
+    });
+
+    function downloadQR() {
+      const canvas = document.getElementById("qrCanvas");
+      const a = document.createElement("a");
+      a.download = "kilicbufe-qr.png"; a.href = canvas.toDataURL("image/png"); a.click();
+    }
+
+    // Expose
+    window._editPrice = editPrice;
+    window._editImg = editImg;
+    window.logout = logout;
+    window._deleteProduct = deleteProduct;
+    window._deliverOrder = deliverOrder;
+    window.addProduct = addProduct;
+    window.switchTab = switchTab;
+    window.toggleOrder = toggleOrder;
+    window.generateQR = generateQR;
+    window.syncColor = syncColor;
+    window.downloadQR = downloadQR;
+    window.previewImg = previewImg;
+
+    // ====== PURE-CANVAS QR GENERATOR ======
+    (function () {
+      "use strict";
+      const gexp = new Uint8Array(512), glog = new Uint8Array(256);
+      (function () { let x = 1; for (let i = 0; i < 255; i++) { gexp[i] = x; glog[x] = i; x <<= 1; if (x & 256) x ^= 285; } for (let i = 255; i < 512; i++)gexp[i] = gexp[i - 255]; }());
+      function gmul(a, b) { if (a === 0 || b === 0) return 0; return gexp[(glog[a] + glog[b]) % 255]; }
+      function genpoly(n) { let p = [1]; for (let i = 0; i < n; i++) { let q = [1, gexp[i]]; let r = new Array(p.length + q.length - 1).fill(0); for (let j = 0; j < p.length; j++)for (let k = 0; k < q.length; k++)r[j + k] ^= gmul(p[j], q[k]); p = r; } return p; }
+      function rsblocks(data, n) { let poly = genpoly(n), result = new Uint8Array(n); let work = new Uint8Array(data.length + n); data.forEach((v, i) => work[i] = v); for (let i = 0; i < data.length; i++) { let c = work[i]; if (c !== 0) for (let j = 0; j < poly.length; j++)work[i + j] ^= gmul(poly[j], c); } for (let i = 0; i < n; i++)result[i] = work[data.length + i]; return result; }
+      const EC_CODEWORDS = { 1: 10, 2: 16, 3: 26, 4: 36, 5: 48, 6: 64, 7: 72, 8: 88, 9: 110, 10: 130 };
+      const DATA_CODEWORDS = { 1: 16, 2: 28, 3: 44, 4: 64, 5: 86, 6: 108, 7: 124, 8: 154, 9: 182, 10: 216 };
+      const REMAINDER = { 1: 0, 2: 7, 3: 7, 4: 7, 5: 7, 6: 7, 7: 0, 8: 0, 9: 0, 10: 0 };
+      const FORMAT_INFO = [0x77c4, 0x72f3, 0x7daa, 0x789d, 0x662f, 0x6318, 0x6c41, 0x6976];
+      function encodeData(str) { const bytes = []; for (let i = 0; i < str.length; i++) { const c = str.charCodeAt(i); if (c > 255) throw new Error("Non-latin"); bytes.push(c); } return bytes; }
+      function pickVersion(len) { const cap = [0, 14, 26, 42, 62, 84, 106, 122, 152, 180, 213]; for (let v = 1; v <= 10; v++)if (len <= cap[v]) return v; throw new Error("Too long"); }
+      function buildMatrix(ver) { const n = 21 + (ver - 1) * 4; const m = Array.from({ length: n }, () => new Int8Array(n).fill(-1)); function set(r, c, v) { if (r >= 0 && r < n && c >= 0 && c < n) m[r][c] = v; } function finder(tr, tc) { for (let r = 0; r < 7; r++)for (let c = 0; c < 7; c++) { const v = (r === 0 || r === 6 || c === 0 || c === 6 || ((r >= 2 && r <= 4) && (c >= 2 && c <= 4))) ? 1 : 0; set(tr + r, tc + c, v); } for (let i = -1; i <= 7; i++) { set(tr - 1, tc + i, 0); set(tr + 7, tc + i, 0); set(tr + i, tc - 1, 0); set(tr + i, tc + 7, 0); } } finder(0, 0); finder(0, n - 7); finder(n - 7, 0); for (let i = 8; i < n - 8; i++) { m[6][i] = m[i][6] = (i % 2 === 0) ? 1 : 0; } m[4 * ver + 9][8] = 1; if (ver >= 2) { const centers = ver === 2 ? [6, 18] : ver === 3 ? [6, 22] : ver === 4 ? [6, 26] : ver === 5 ? [6, 30] : ver === 6 ? [6, 34] : [6, 38]; for (const ar of centers) for (const ac of centers) { if (m[ar][ac] !== -1) continue; for (let r = -2; r <= 2; r++)for (let c = -2; c <= 2; c++) { const v = (Math.abs(r) === 2 || Math.abs(c) === 2 || r === 0 && c === 0) ? 1 : 0; set(ar + r, ac + c, v); } } } for (let i = 0; i < 9; i++) { if (m[8][i] === -1) m[8][i] = -2; if (m[i][8] === -1) m[i][8] = -2; } for (let i = 0; i < 8; i++) { m[8][n - 1 - i] = -2; m[n - 1 - i][8] = -2; } return m; }
+      function placeData(m, bits) { const n = m.length; let bi = 0, up = true; for (let right = n - 1; right >= 1; right -= 2) { if (right === 6) right = 5; for (let row = 0; row < n; row++) { const r = up ? n - 1 - row : row; for (let lr = 0; lr < 2; lr++) { const c = right - lr; if (m[r][c] === -1) { m[r][c] = bi < bits.length ? bits[bi++] : 0; } } } up = !up; } }
+      const MASKS = [(r, c) => (r + c) % 2 === 0, (r, _) => r % 2 === 0, (_, c) => c % 3 === 0, (r, c) => (r + c) % 3 === 0, (r, c) => (Math.floor(r / 2) + Math.floor(c / 3)) % 2 === 0, (r, c) => (r * c) % 2 + (r * c) % 3 === 0, (r, c) => ((r * c) % 2 + (r * c) % 3) % 2 === 0, (r, c) => ((r + c) % 2 + (r * c) % 3) % 2 === 0];
+      function applyMask(m, mi) { const n = m.length, fn = MASKS[mi]; const copy = m.map(r => Int8Array.from(r)); for (let r = 0; r < n; r++)for (let c = 0; c < n; c++)if (copy[r][c] === 0 || copy[r][c] === 1) if (fn(r, c)) copy[r][c] ^= 1; return copy; }
+      function writeFormat(m, mi) { const n = m.length, fi = FORMAT_INFO[mi], bits = []; for (let i = 14; i >= 0; i--)bits.push((fi >> i) & 1); const pos = [[8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [8, 5], [8, 7], [8, 8], [7, 8], [5, 8], [4, 8], [3, 8], [2, 8], [1, 8], [0, 8]]; pos.forEach(([r, c], i) => m[r][c] = bits[i]); for (let i = 0; i < 7; i++)m[n - 1 - i][8] = bits[i]; for (let i = 0; i < 8; i++)m[8][n - 6 + i] = bits[7 + i]; }
+      function penalty(m) { const n = m.length; let score = 0; for (let r = 0; r < n; r++) { let run = 1, last = m[r][0]; for (let c = 1; c < n; c++) { if (m[r][c] === last) run++; else { if (run >= 5) score += run - 2; run = 1; last = m[r][c]; } if (run >= 5) score += run - 2; } }; for (let c = 0; c < n; c++) { let run = 1, last = m[0][c]; for (let r = 1; r < n; r++) { if (m[r][c] === last) run++; else { if (run >= 5) score += run - 2; run = 1; last = m[r][c]; } if (run >= 5) score += run - 2; } }; for (let r = 0; r < n - 1; r++)for (let c = 0; c < n - 1; c++) { const v = m[r][c]; if (v === m[r][c + 1] && v === m[r + 1][c] && v === m[r + 1][c + 1]) score += 3; } return score; }
+      window.makeQR = function (text) { const bytes = encodeData(text); const ver = pickVersion(bytes.length); const ec = EC_CODEWORDS[ver]; const dc = DATA_CODEWORDS[ver]; const stream = []; stream.push(0, 1, 0, 0); const lenBits = ver < 10 ? 8 : 16; for (let i = lenBits - 1; i >= 0; i--)stream.push((bytes.length >> i) & 1); for (const b of bytes) for (let i = 7; i >= 0; i--)stream.push((b >> i) & 1); for (let i = 0; i < 4 && stream.length < dc * 8; i++)stream.push(0); while (stream.length % 8 !== 0) stream.push(0); const pads = [0b11101100, 0b00010001]; let pi = 0; while (stream.length < dc * 8) { const p = pads[pi % 2]; for (let i = 7; i >= 0; i--)stream.push((p >> i) & 1); pi++; } const dwords = []; for (let i = 0; i < dc; i++) { let b = 0; for (let j = 0; j < 8; j++)b = (b << 1) | stream[i * 8 + j]; dwords.push(b); } const ecwords = Array.from(rsblocks(dwords, ec)); const all = [...dwords, ...ecwords]; const bits = []; for (const w of all) for (let i = 7; i >= 0; i--)bits.push((w >> i) & 1); for (let i = 0; i < REMAINDER[ver]; i++)bits.push(0); const base = buildMatrix(ver); placeData(base, bits); let bestMask = 0, bestPen = Infinity; for (let mi = 0; mi < 8; mi++) { const mq = applyMask(base, mi); writeFormat(mq, mi); const p = penalty(mq); if (p < bestPen) { bestPen = p; bestMask = mi; } } const final = applyMask(base, bestMask); writeFormat(final, bestMask); return { matrix: final, size: 21 + (ver - 1) * 4 }; };
+    })();
+  </script>
+</body>
+
+</html>
