@@ -414,9 +414,9 @@ function renderOrders() {
     return;
   }
   [...orders].reverse().forEach(o => {
-    const total   = o.total || o.items.reduce((s, i) => s + i.price * i.qty, 0);
+    const total = o.total || o.items.reduce((s, i) => s + i.price * i.qty, 0);
     const preview = o.items.map(i => `${i.name} ×${i.qty}`).join(", ");
-    const rows    = o.items.map(i => `
+    const rows = o.items.map(i => `
       <tr>
         <td class="item-name">${i.name}</td>
         <td class="item-qty">×${i.qty}</td>
