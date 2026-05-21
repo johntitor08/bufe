@@ -774,6 +774,85 @@
       background: #1a7a45;
     }
 
+    /* ===== ALT KATEGORİ ===== */
+    .menu-subcategory {
+      margin-bottom: 14px;
+      margin-left: 2px;
+    }
+
+    .menu-subcategory-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 4px 0 6px;
+      margin-bottom: 2px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .menu-subcategory-title::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 12px;
+      background: var(--gold);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .menu-subcategory ul {
+      list-style: none;
+    }
+
+    .menu-subcategory li {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0 8px 12px;
+      border-bottom: 1px dashed var(--border);
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .menu-subcategory li:last-child {
+      border-bottom: none;
+    }
+
+    /* Kategori filtre çubuğu */
+    .menu-filter-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .menu-filter-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: white;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .menu-filter-btn:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .menu-filter-btn.active {
+      background: var(--red-dark);
+      color: white;
+      border-color: var(--red-dark);
+    }
+
     /* ===== MOBİL ===== */
     @media (max-width: 768px) {
       .main-layout {
@@ -818,8 +897,8 @@
   <header>
     <h1>Kılıç<span>büfe</span></h1>
     <nav>
-      <a href="#urunler">Ürünler</a>
       <a href="#menu">Menü</a>
+      <a href="#urunler">Ürünler</a>
       <a href="#hakkimizda">Hakkımızda</a>
       <a href="#iletisim">İletişim</a>
     </nav>
@@ -834,8 +913,15 @@
   <div class="main-layout">
     <div class="content-col">
 
+      <section id="menu">
+        <h2 class="section-title">Menü</h2>
+        <div class="menu-filter-bar" id="menuFilterBar"></div>
+        <div id="menuList"></div>
+      </section>
+
       <section id="urunler">
         <h2 class="section-title">Ürünler</h2>
+        <div class="menu-filter-bar" id="productFilterBar"></div>
         <div id="productList">
           <!-- Skeleton loading -->
           <div class="skeleton-card">
@@ -863,11 +949,6 @@
             </div>
           </div>
         </div>
-      </section>
-
-      <section id="menu">
-        <h2 class="section-title">Menü</h2>
-        <div id="menuList"></div>
       </section>
 
       <section id="hakkimizda">
@@ -1007,17 +1088,38 @@
       });
     }
 
+    let activeProductFilter = "all";
+
     function renderProducts() {
       const productList = document.getElementById("productList");
+      const filterBar = document.getElementById("productFilterBar");
       if (!productList) return;
+
+      // Filtre butonları
+      const cats = [...new Set(products.map(p => p.category || "Diğer"))].sort();
+      if (filterBar) {
+        filterBar.innerHTML = `
+      <button class="menu-filter-btn ${activeProductFilter === 'all' ? 'active' : ''}"
+        onclick="setProductFilter('all')">Tümü</button>
+      ${cats.map(cat => `
+        <button class="menu-filter-btn ${activeProductFilter === cat ? 'active' : ''}"
+          onclick="setProductFilter('${cat.replace(/'/g, "\\'")}')">
+          ${getCategoryEmoji(cat)} ${cat}
+        </button>`).join('')}`;
+      }
+
+      const visible = activeProductFilter === 'all'
+        ? products
+        : products.filter(p => (p.category || "Diğer") === activeProductFilter);
+
       productList.innerHTML = "";
 
-      if (products.length === 0) {
-        productList.innerHTML = `<p style="color:var(--muted);padding:20px 0;grid-column:1/-1;">Ürün bulunamadı.</p>`;
+      if (visible.length === 0) {
+        productList.innerHTML = `<p style="color:var(--muted);padding:20px 0;grid-column:1/-1;">Bu kategoride ürün yok.</p>`;
         return;
       }
 
-      products.forEach(p => {
+      visible.forEach(p => {
         const div = document.createElement("div");
         div.className = "card";
         div.onclick = () => addToCart(p.fbKey);
@@ -1034,27 +1136,93 @@
       });
     }
 
+    function setProductFilter(cat) {
+      activeProductFilter = cat;
+      renderProducts();
+    }
+    window.setProductFilter = setProductFilter;
+
+    let activeMenuFilter = "all";
+
     function renderMenu() {
       const menuList = document.getElementById("menuList");
+      const filterBar = document.getElementById("menuFilterBar");
       if (!menuList) return;
-      const categories = {};
+
+      // Kategori → { subcategory → [products] } yapısı
+      const catMap = {};
       products.forEach(p => {
-        if (!categories[p.category]) categories[p.category] = [];
-        categories[p.category].push(p);
+        const cat = p.category || "Diğer";
+        const sub = p.subcategory || "";   // boşsa alt kategori yok
+        if (!catMap[cat]) catMap[cat] = {};
+        if (!catMap[cat][sub]) catMap[cat][sub] = [];
+        catMap[cat][sub].push(p);
       });
-      menuList.innerHTML = "";
-      for (let cat in categories) {
-        menuList.innerHTML += `
+
+      const cats = Object.keys(catMap).sort();
+
+      // Filtre butonları
+      if (filterBar) {
+        filterBar.innerHTML = `
+      <button class="menu-filter-btn ${activeMenuFilter === 'all' ? 'active' : ''}"
+        onclick="setMenuFilter('all')">Tümü</button>
+      ${cats.map(cat => `
+        <button class="menu-filter-btn ${activeMenuFilter === cat ? 'active' : ''}"
+          onclick="setMenuFilter('${cat.replace(/'/g, "\\'")}')">
+          ${getCategoryEmoji(cat)} ${cat}
+        </button>`).join('')}`;
+      }
+
+      // İçerik
+      const visibleCats = activeMenuFilter === 'all' ? cats : cats.filter(c => c === activeMenuFilter);
+
+      menuList.innerHTML = visibleCats.map(cat => {
+        const subMap = catMap[cat];
+        const subKeys = Object.keys(subMap).sort();
+        // Eğer tek alt kategori varsa ve o boş string'se — düz liste göster
+        const hasSubs = subKeys.some(k => k !== "");
+
+        let inner = "";
+        if (!hasSubs) {
+          // Alt kategori yok — düz liste
+          const items = subMap[""] || [];
+          inner = `<ul>${items.map(p =>
+            `<li><span>${p.name}</span><span class="menu-price">${p.price}₺</span></li>`
+          ).join("")}</ul>`;
+        } else {
+          // Alt kategoriler var
+          // Önce alt kategorisiz ürünler (boş key)
+          const plain = subMap[""] || [];
+          if (plain.length) {
+            inner += `<ul>${plain.map(p =>
+              `<li><span>${p.name}</span><span class="menu-price">${p.price}₺</span></li>`
+            ).join("")}</ul>`;
+          }
+          // Sonra alt kategoriler
+          subKeys.filter(k => k !== "").forEach(sub => {
+            inner += `
+          <div class="menu-subcategory">
+            <div class="menu-subcategory-title">${sub}</div>
+            <ul>${subMap[sub].map(p =>
+              `<li><span>${p.name}</span><span class="menu-price">${p.price}₺</span></li>`
+            ).join("")}</ul>
+          </div>`;
+          });
+        }
+
+        return `
       <div class="menu-category">
         <h3>${getCategoryEmoji(cat)} ${cat}</h3>
-        <ul>
-          ${categories[cat].map(p => `
-            <li><span>${p.name}</span><span class="menu-price">${p.price}₺</span></li>
-          `).join("")}
-        </ul>
+        ${inner}
       </div>`;
-      }
+      }).join("");
     }
+
+    function setMenuFilter(cat) {
+      activeMenuFilter = cat;
+      renderMenu();
+    }
+    window.setMenuFilter = setMenuFilter;
 
     // SEPET
     function addToCart(fbKey) {
