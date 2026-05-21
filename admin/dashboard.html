@@ -365,7 +365,7 @@ onAuthStateChanged(auth, (user) => {
 async function logout() { await signOut(auth); window.location.href = "login.html"; }
 
 let products = [];
-let orders   = [];
+let orders = [];
 
 function startListeners() {
   onValue(ref(db, "products"), (snap) => {
@@ -477,7 +477,7 @@ function thumbHTML(p) {
 }
 
 function renderProducts() {
-  const list    = document.getElementById("productList");
+  const list = document.getElementById("productList");
   const countEl = document.getElementById("productCount");
   if (countEl) countEl.textContent = products.length + " ürün";
   if (products.length === 0) {
@@ -522,9 +522,9 @@ async function addProduct() {
 
   let valid = true;
   ["pname","pprice","pcategory"].forEach(id => clearFieldErr(id));
-  if (!name) { fieldErr("pname",     "Ürün adı zorunlu.");  valid = false; }
-  if (!priceRaw || isNaN(price) || price <= 0) { fieldErr("pprice",    "Geçerli fiyat.");     valid = false; }
-  if (!category) { fieldErr("pcategory", "Kategori zorunlu.");  valid = false; }
+  if (!name) { fieldErr("pname", "Ürün adı zorunlu."); valid = false; }
+  if (!priceRaw || isNaN(price) || price <= 0) { fieldErr("pprice", "Geçerli fiyat."); valid = false; }
+  if (!category) { fieldErr("pcategory", "Kategori zorunlu."); valid = false; }
   if (!valid) return;
 
   try {
@@ -580,9 +580,9 @@ let qrInstance = null;
 function generateQR() {
   if (typeof QRCode === "undefined") { setTimeout(generateQR, 100); return; }
 
-  const url   = document.getElementById("qrUrl").value.trim() || "https://kilicbufe.com";
+  const url = document.getElementById("qrUrl").value.trim() || "https://kilicbufe.com";
   const color = document.getElementById("qrColor").value;
-  const size  = parseInt(document.getElementById("qrSize").value);
+  const size = parseInt(document.getElementById("qrSize").value);
 
   document.getElementById("qrUrlLabel").textContent = url;
 
