@@ -826,7 +826,7 @@
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
-      margin-bottom: 22px;
+      margin-bottom: 8px;
     }
 
     .menu-filter-btn {
@@ -851,6 +851,46 @@
       background: var(--red-dark);
       color: white;
       border-color: var(--red-dark);
+    }
+
+    /* Alt kategori filtre çubuğu */
+    .sub-filter-bar {
+      display: none;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      padding: 10px 14px;
+      background: var(--warm-white);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .sub-filter-bar.show {
+      display: flex;
+    }
+
+    .sub-filter-btn {
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: white;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .sub-filter-btn:hover {
+      border-color: var(--gold);
+      color: var(--brown);
+    }
+
+    .sub-filter-btn.active {
+      background: var(--gold);
+      color: var(--brown);
+      border-color: var(--gold);
     }
 
     /* ===== MOBİL ===== */
@@ -916,12 +956,14 @@
       <section id="menu">
         <h2 class="section-title">Menü</h2>
         <div class="menu-filter-bar" id="menuFilterBar"></div>
+        <div class="sub-filter-bar" id="menuSubFilterBar"></div>
         <div id="menuList"></div>
       </section>
 
       <section id="urunler">
         <h2 class="section-title">Ürünler</h2>
         <div class="menu-filter-bar" id="productFilterBar"></div>
+        <div class="sub-filter-bar" id="productSubFilterBar"></div>
         <div id="productList">
           <!-- Skeleton loading -->
           <div class="skeleton-card">
@@ -1089,140 +1131,212 @@
     }
 
     let activeProductFilter = "all";
+    let activeProductSubFilter = "all";
 
     function renderProducts() {
       const productList = document.getElementById("productList");
       const filterBar = document.getElementById("productFilterBar");
+      const subFilterBar = document.getElementById("productSubFilterBar");
       if (!productList) return;
 
-      // Filtre butonları
-      const cats = [...new Set(products.map(p => p.category || "Diğer"))].sort();
+      // catMap: kategori → { subcat → [products] }
+      const catMap = {};
+      products.forEach(p => {
+        const cat = p.category || "Diğer";
+        const sub = p.subcategory || "";
+        if (!catMap[cat]) catMap[cat] = {};
+        if (!catMap[cat][sub]) catMap[cat][sub] = [];
+        catMap[cat][sub].push(p);
+      });
+      const cats = Object.keys(catMap).sort();
+
+      // Üst kategori butonları
       if (filterBar) {
         filterBar.innerHTML = `
-      <button class="menu-filter-btn ${activeProductFilter === 'all' ? 'active' : ''}"
-        onclick="setProductFilter('all')">Tümü</button>
-      ${cats.map(cat => `
-        <button class="menu-filter-btn ${activeProductFilter === cat ? 'active' : ''}"
-          onclick="setProductFilter('${cat.replace(/'/g, "\\'")}')">
-          ${getCategoryEmoji(cat)} ${cat}
-        </button>`).join('')}`;
+          <button class="menu-filter-btn ${activeProductFilter === 'all' ? 'active' : ''}"
+            onclick="setProductFilter('all')">Tümü</button>
+          ${cats.map(cat => `
+            <button class="menu-filter-btn ${activeProductFilter === cat ? 'active' : ''}"
+              onclick="setProductFilter('${cat.replace(/'/g, "\\'")}')">
+              ${getCategoryEmoji(cat)} ${cat}
+            </button>`).join('')}`;
       }
 
-      const visible = activeProductFilter === 'all'
+      // Alt kategori butonları
+      if (subFilterBar) {
+        if (activeProductFilter !== 'all') {
+          const subMap = catMap[activeProductFilter] || {};
+          const subKeys = Object.keys(subMap).filter(k => k !== "").sort();
+          if (subKeys.length > 0) {
+            subFilterBar.classList.add("show");
+            subFilterBar.innerHTML = `
+              <button class="sub-filter-btn ${activeProductSubFilter === 'all' ? 'active' : ''}"
+                onclick="setProductSubFilter('all')">Tümü</button>
+              ${subKeys.map(sub => `
+                <button class="sub-filter-btn ${activeProductSubFilter === sub ? 'active' : ''}"
+                  onclick="setProductSubFilter('${sub.replace(/'/g, "\\'")}')">
+                  ${sub}
+                </button>`).join('')}`;
+          } else {
+            subFilterBar.classList.remove("show");
+          }
+        } else {
+          subFilterBar.classList.remove("show");
+          activeProductSubFilter = "all";
+        }
+      }
+
+      // Filtrelenmiş ürünler
+      let visible = activeProductFilter === 'all'
         ? products
         : products.filter(p => (p.category || "Diğer") === activeProductFilter);
+      if (activeProductSubFilter !== 'all') {
+        visible = visible.filter(p => (p.subcategory || "") === activeProductSubFilter);
+      }
 
       productList.innerHTML = "";
-
       if (visible.length === 0) {
         productList.innerHTML = `<p style="color:var(--muted);padding:20px 0;grid-column:1/-1;">Bu kategoride ürün yok.</p>`;
         return;
       }
-
       visible.forEach(p => {
         const div = document.createElement("div");
         div.className = "card";
         div.onclick = () => addToCart(p.fbKey);
         div.innerHTML = `
-      <div class="card-img">${productImageHTML(p)}</div>
-      <div class="card-body">
-        <span class="category-tag">${p.category}</span>
-        <h3>${p.name}</h3>
-        <div class="price">${p.price}₺</div>
-        <button class="add-btn" onclick="event.stopPropagation(); addToCart('${p.fbKey}')">+ Sepete Ekle</button>
-      </div>
-    `;
+          <div class="card-img">${productImageHTML(p)}</div>
+          <div class="card-body">
+            <span class="category-tag">${p.subcategory ? p.subcategory : p.category}</span>
+            <h3>${p.name}</h3>
+            <div class="price">${p.price}₺</div>
+            <button class="add-btn" onclick="event.stopPropagation(); addToCart('${p.fbKey}')">+ Sepete Ekle</button>
+          </div>`;
         productList.appendChild(div);
       });
     }
 
     function setProductFilter(cat) {
       activeProductFilter = cat;
+      activeProductSubFilter = "all";
+      renderProducts();
+    }
+    function setProductSubFilter(sub) {
+      activeProductSubFilter = sub;
       renderProducts();
     }
     window.setProductFilter = setProductFilter;
+    window.setProductSubFilter = setProductSubFilter;
 
     let activeMenuFilter = "all";
+    let activeMenuSubFilter = "all";
 
     function renderMenu() {
       const menuList = document.getElementById("menuList");
       const filterBar = document.getElementById("menuFilterBar");
+      const subFilterBar = document.getElementById("menuSubFilterBar");
       if (!menuList) return;
 
-      // Kategori → { subcategory → [products] } yapısı
       const catMap = {};
       products.forEach(p => {
         const cat = p.category || "Diğer";
-        const sub = p.subcategory || "";   // boşsa alt kategori yok
+        const sub = p.subcategory || "";
         if (!catMap[cat]) catMap[cat] = {};
         if (!catMap[cat][sub]) catMap[cat][sub] = [];
         catMap[cat][sub].push(p);
       });
-
       const cats = Object.keys(catMap).sort();
 
-      // Filtre butonları
+      // Üst kategori butonları
       if (filterBar) {
         filterBar.innerHTML = `
-      <button class="menu-filter-btn ${activeMenuFilter === 'all' ? 'active' : ''}"
-        onclick="setMenuFilter('all')">Tümü</button>
-      ${cats.map(cat => `
-        <button class="menu-filter-btn ${activeMenuFilter === cat ? 'active' : ''}"
-          onclick="setMenuFilter('${cat.replace(/'/g, "\\'")}')">
-          ${getCategoryEmoji(cat)} ${cat}
-        </button>`).join('')}`;
+          <button class="menu-filter-btn ${activeMenuFilter === 'all' ? 'active' : ''}"
+            onclick="setMenuFilter('all')">Tümü</button>
+          ${cats.map(cat => `
+            <button class="menu-filter-btn ${activeMenuFilter === cat ? 'active' : ''}"
+              onclick="setMenuFilter('${cat.replace(/'/g, "\\'")}')">
+              ${getCategoryEmoji(cat)} ${cat}
+            </button>`).join('')}`;
       }
 
-      // İçerik
+      // Alt kategori butonları
+      if (subFilterBar) {
+        if (activeMenuFilter !== 'all') {
+          const subMap = catMap[activeMenuFilter] || {};
+          const subKeys = Object.keys(subMap).filter(k => k !== "").sort();
+          if (subKeys.length > 0) {
+            subFilterBar.classList.add("show");
+            subFilterBar.innerHTML = `
+              <button class="sub-filter-btn ${activeMenuSubFilter === 'all' ? 'active' : ''}"
+                onclick="setMenuSubFilter('all')">Tümü</button>
+              ${subKeys.map(sub => `
+                <button class="sub-filter-btn ${activeMenuSubFilter === sub ? 'active' : ''}"
+                  onclick="setMenuSubFilter('${sub.replace(/'/g, "\\'")}')">
+                  ${sub}
+                </button>`).join('')}`;
+          } else {
+            subFilterBar.classList.remove("show");
+          }
+        } else {
+          subFilterBar.classList.remove("show");
+          activeMenuSubFilter = "all";
+        }
+      }
+
+      // Görünecek kategoriler
       const visibleCats = activeMenuFilter === 'all' ? cats : cats.filter(c => c === activeMenuFilter);
 
       menuList.innerHTML = visibleCats.map(cat => {
         const subMap = catMap[cat];
         const subKeys = Object.keys(subMap).sort();
-        // Eğer tek alt kategori varsa ve o boş string'se — düz liste göster
         const hasSubs = subKeys.some(k => k !== "");
 
         let inner = "";
         if (!hasSubs) {
-          // Alt kategori yok — düz liste
           const items = subMap[""] || [];
           inner = `<ul>${items.map(p =>
             `<li><span>${p.name}</span><span class="menu-price">${p.price}₺</span></li>`
           ).join("")}</ul>`;
         } else {
-          // Alt kategoriler var
-          // Önce alt kategorisiz ürünler (boş key)
-          const plain = subMap[""] || [];
-          if (plain.length) {
+          // Alt kategorisiz ürünler
+          const plain = (subMap[""] || []);
+          const showPlain = activeMenuSubFilter === 'all' || activeMenuSubFilter === "";
+          if (plain.length && showPlain) {
             inner += `<ul>${plain.map(p =>
               `<li><span>${p.name}</span><span class="menu-price">${p.price}₺</span></li>`
             ).join("")}</ul>`;
           }
-          // Sonra alt kategoriler
+          // Alt kategoriler
           subKeys.filter(k => k !== "").forEach(sub => {
+            if (activeMenuSubFilter !== 'all' && activeMenuSubFilter !== sub) return;
             inner += `
-          <div class="menu-subcategory">
-            <div class="menu-subcategory-title">${sub}</div>
-            <ul>${subMap[sub].map(p =>
+              <div class="menu-subcategory">
+                <div class="menu-subcategory-title">${sub}</div>
+                <ul>${subMap[sub].map(p =>
               `<li><span>${p.name}</span><span class="menu-price">${p.price}₺</span></li>`
             ).join("")}</ul>
-          </div>`;
+              </div>`;
           });
         }
 
         return `
-      <div class="menu-category">
-        <h3>${getCategoryEmoji(cat)} ${cat}</h3>
-        ${inner}
-      </div>`;
+          <div class="menu-category">
+            <h3>${getCategoryEmoji(cat)} ${cat}</h3>
+            ${inner}
+          </div>`;
       }).join("");
     }
 
     function setMenuFilter(cat) {
       activeMenuFilter = cat;
+      activeMenuSubFilter = "all";
+      renderMenu();
+    }
+    function setMenuSubFilter(sub) {
+      activeMenuSubFilter = sub;
       renderMenu();
     }
     window.setMenuFilter = setMenuFilter;
+    window.setMenuSubFilter = setMenuSubFilter;
 
     // SEPET
     function addToCart(fbKey) {
